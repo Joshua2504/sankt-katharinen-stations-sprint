@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8888:3000"         # host:container — access via http://localhost:8888
+    volumes:
+      # Bind-mount entire project root so source edits are reflected instantly
+      - .:/app
+      # Anonymous volume keeps node_modules compiled inside the container,
+      # preventing the host's (absent) node_modules from masking it.
+      - /app/node_modules
+      # Persistent SQLite database stored on the host
+      - ./data:/app/data
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development

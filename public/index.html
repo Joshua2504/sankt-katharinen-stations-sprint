@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stations-Sprint</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Smooth screen transitions */
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    /* Task card pulse animation when new task arrives */
+    @keyframes taskIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .task-card { animation: taskIn 0.2s ease-out; }
+
+    /* Countdown bar */
+    @keyframes shrink {
+      from { width: 100%; }
+      to   { width: 0%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+
+  <!-- ═══════════════════════════════════════════
+       LOBBY SCREEN
+  ════════════════════════════════════════════ -->
+  <div id="screen-lobby" class="screen active flex-col items-center justify-center min-h-screen p-6 gap-6">
+    <div class="text-center">
+      <h1 class="text-4xl font-extrabold text-emerald-400 tracking-tight">🏥 Stations-Sprint</h1>
+      <p class="mt-2 text-slate-400 text-sm">Reagiere schnell — handle richtig!</p>
+    </div>
+
+    <div class="w-full max-w-sm flex flex-col gap-4">
+      <input
+        id="name-input"
+        type="text"
+        maxlength="32"
+        placeholder="Dein Name …"
+        class="w-full rounded-xl px-4 py-4 text-lg bg-slate-800 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+      />
+      <button
+        id="btn-register"
+        class="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition text-white font-bold text-xl py-5"
+        style="min-height:80px"
+      >
+        Anmelden &amp; Spiel starten →
+      </button>
+    </div>
+
+    <!-- Lobby leaderboard preview -->
+    <div class="w-full max-w-sm">
+      <h2 class="text-lg font-semibold text-slate-300 mb-2 text-center">🏆 Bestenliste</h2>
+      <div id="lobby-leaderboard" class="rounded-xl bg-slate-800 divide-y divide-slate-700 overflow-hidden text-sm">
+        <p class="text-center text-slate-500 py-4">Wird geladen …</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       GAME SCREEN
+  ════════════════════════════════════════════ -->
+  <div id="screen-game" class="screen flex-col min-h-screen">
+
+    <!-- Top HUD -->
+    <div class="flex items-center justify-between bg-slate-800 px-4 py-3 border-b border-slate-700">
+      <div class="flex flex-col items-center">
+        <span class="text-xs text-slate-400 uppercase tracking-widest">Zeit</span>
+        <span id="hud-timer" class="text-3xl font-mono font-bold text-emerald-400">60</span>
+      </div>
+      <div class="text-center">
+        <span id="hud-name" class="text-lg font-semibold text-white truncate max-w-[140px] block"></span>
+        <span class="text-xs text-slate-400">Stationsschwester / -pfleger</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-xs text-slate-400 uppercase tracking-widest">Punkte</span>
+        <span id="hud-score" class="text-3xl font-mono font-bold text-yellow-400">0</span>
+      </div>
+    </div>
+
+    <!-- Tasks area -->
+    <div class="flex-1 p-4 flex flex-col gap-3 overflow-y-auto" id="tasks-container">
+      <p id="tasks-empty" class="text-slate-500 text-center mt-8">Warte auf Aufgaben …</p>
+    </div>
+
+    <!-- Live leaderboard (collapsed on mobile, visible on wider screens) -->
+    <div class="border-t border-slate-700 bg-slate-800 p-4">
+      <h3 class="text-xs uppercase tracking-widest text-slate-400 mb-2 text-center">Live-Bestenliste</h3>
+      <div id="game-leaderboard" class="text-sm divide-y divide-slate-700"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       GAME OVER SCREEN
+  ════════════════════════════════════════════ -->
+  <div id="screen-gameover" class="screen flex-col items-center justify-center min-h-screen p-6 gap-6">
+    <div class="text-center">
+      <div class="text-6xl mb-2">🎉</div>
+      <h1 class="text-3xl font-extrabold text-white">Runde beendet!</h1>
+      <p class="mt-2 text-slate-400">Dein Ergebnis:</p>
+      <p id="final-score" class="text-6xl font-mono font-bold text-yellow-400 mt-2">0</p>
+      <p class="text-slate-400 text-sm">Punkte</p>
+    </div>
+
+    <button
+      id="btn-play-again"
+      class="w-full max-w-sm rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition text-white font-bold text-xl py-5"
+      style="min-height:80px"
+    >
+      Nochmal spielen →
+    </button>
+
+    <div class="w-full max-w-sm">
+      <h2 class="text-lg font-semibold text-slate-300 mb-2 text-center">🏆 Bestenliste</h2>
+      <div id="gameover-leaderboard" class="rounded-xl bg-slate-800 divide-y divide-slate-700 overflow-hidden text-sm"></div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
