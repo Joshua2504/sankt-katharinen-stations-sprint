@@ -1,8 +1,22 @@
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data   # persist Redis data across restarts
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   app:
     build: .
     ports:
       - "8888:3000"         # host:container — access via http://localhost:8888
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       # Bind-mount entire project root so source edits are reflected instantly
       - .:/app
@@ -14,3 +28,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
+      REDIS_URL: redis://redis:6379
+
+volumes:
+  redis-data:
